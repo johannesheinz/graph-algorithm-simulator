@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Platform exposing (..)
+import Language exposing (..)
 
 
 type Msg
