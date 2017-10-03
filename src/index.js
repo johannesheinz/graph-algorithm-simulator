@@ -10,13 +10,16 @@ var mountNode = document.getElementById('main');
 
 var app = Elm.Main.embed(mountNode);
 
-var container = document.getElementById('network');
 
 app.ports.drawGraph.subscribe(graph => {
+    var container = document.getElementById('vis');
+
     var nodes = new vis.DataSet(graph.nodes.map((node, index) => {
+        let color = node.marked ? 'red' : 'blue';
         return {
             id: node.id,
-            label: node.id
+            label: node.id,
+            color: color
         };
     }));
 

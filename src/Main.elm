@@ -1,13 +1,13 @@
 port module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Platform exposing (..)
 
 
 type Msg
-    = Init
-    | UpdateGraph Graph
+    = UpdateGraph Graph
     | GraphUpdated
 
 
@@ -37,10 +37,10 @@ type alias Model =
 port drawGraph : Graph -> Cmd msg
 
 
-model : Model
-model =
+initialModel : Model
+initialModel =
     { graph =
-        { nodes = [ { id = 1, marked = False }, { id = 2, marked = False }, { id = 3, marked = False }, { id = 4, marked = False }, { id = 5, marked = False } ]
+        { nodes = [ { id = 1, marked = True }, { id = 2, marked = False }, { id = 3, marked = False }, { id = 4, marked = False }, { id = 5, marked = False } ]
         , edges = [ { from = 1, to = 2 }, { from = 4, to = 5 }, { from = 4, to = 1 } ]
         }
     }
@@ -48,17 +48,27 @@ model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ button [ onClick (UpdateGraph model.graph) ] [ text "Update" ]
+    div [ class "simulationPanel" ]
+        [ h1 [] [ text "Graph Aglorithmn Simulator" ]
+        , div [ class "simulationPanelItem" ]
+            [ h2 [] [ text "Algorithmn Selection" ]
+            ]
+        , div [ class "simulationPanelItem" ]
+            [ h2 [] [ text "Debug Control" ]
+            , button [ onClick (UpdateGraph model.graph) ] [ text "Update" ]
+            ]
+        , div [ class "simulationPanelItem" ]
+            [ h2 [] [ text "Debug State" ] ]
+        , div [ class "simulationPanelItem" ]
+            [ h2 [] [ text "Graph Visualization" ]
+            , div [ id "vis" ] []
+            ]
         ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Init ->
-            ( model, Cmd.none )
-
         UpdateGraph graph ->
             ( model, drawGraph graph )
 
@@ -74,7 +84,7 @@ subscriptions model =
 main : Platform.Program Basics.Never Model Msg
 main =
     Html.program
-        { init = ( model, Cmd.none )
+        { init = ( initialModel, Cmd.none )
         , update = update
         , subscriptions = subscriptions
         , view = view
