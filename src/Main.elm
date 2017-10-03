@@ -1,36 +1,69 @@
-module Main exposing (..)
+port module Main exposing (..)
 
-import Html exposing (Html, button, div, text, ul, li)
-import Html.Attributes exposing (class, style)
-import List exposing (foldr, map)
-import List.Extra exposing (..)
-import Maybe exposing (Maybe)
-import Task exposing (..)
+import Html exposing (..)
+import Html.Events exposing (..)
+import Platform exposing (..)
 
 
 type Msg
     = Init
+    | UpdateGraph Graph
+    | GraphUpdated
+
+
+type alias Node =
+    { id : Int
+    , marked : Bool
+    }
+
+
+type alias Edge =
+    { from : Int
+    , to : Int
+    }
+
+
+type alias Graph =
+    { nodes : List Node
+    , edges : List Edge
+    }
 
 
 type alias Model =
-    String
+    { graph : Graph
+    }
+
+
+port drawGraph : Graph -> Cmd msg
 
 
 model : Model
 model =
-    "Hallo Welt"
+    { graph =
+        { nodes = [ { id = 1, marked = False }, { id = 2, marked = False }, { id = 3, marked = False }, { id = 4, marked = False }, { id = 5, marked = False } ]
+        , edges = [ { from = 1, to = 2 }, { from = 4, to = 5 }, { from = 4, to = 1 } ]
+        }
+    }
 
 
 view : Model -> Html Msg
 view model =
-    div [] [ text model ]
+    div []
+        [ button [ onClick (UpdateGraph model.graph) ] [ text "Update" ]
+        ]
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Init ->
-            model
+            ( model, Cmd.none )
+
+        UpdateGraph graph ->
+            ( model, drawGraph graph )
+
+        GraphUpdated ->
+            ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -40,8 +73,9 @@ subscriptions model =
 
 main : Platform.Program Basics.Never Model Msg
 main =
-    Html.beginnerProgram
-        { model = model
-        , view = view
+    Html.program
+        { init = ( model, Cmd.none )
         , update = update
+        , subscriptions = subscriptions
+        , view = view
         }
