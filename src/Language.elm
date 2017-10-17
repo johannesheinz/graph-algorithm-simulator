@@ -21,7 +21,8 @@ type ValueExpr
       -- | SetExpr (List ValueExpr)
     | ReferenceExpr Name
     | BinOpExpr BinOp ValueExpr ValueExpr
-    | BoolOpExpr 
+    | BoolOpExpr
+
 
 type BinOp
     = PlusOp
@@ -65,16 +66,21 @@ type alias State =
     }
 
 
-evalBoolExpr : State -> BooleanExpr -> Bool
-evalBoolExpr state expr = 
+evalBoolExpr : State -> BooleanExpr -> Result String Bool
+evalBoolExpr state expr =
     case expr of
         AndExpr bexp1 bexp2 ->
-            
+            Result.map2 (&&) (evalBoolExpr state bexp1) (evalBoolExpr state bexp2)
+
         OrExpr bexp1 bexp2 ->
+            Result.map2 (||) (evalBoolExpr state bexp1) (evalBoolExpr state bexp2)
 
         NotExpr bexp ->
-            
-            
+            Result.map (not) (evalBoolExpr state bexp)
+
+        CmpExpr cmpOp exp1 exp2 ->
+            Err 'False"
+
 
 evalExpr : State -> ValueExpr -> Result String Value
 evalExpr state expr =
@@ -168,5 +174,3 @@ applySetOp op leftValue rightValue =
 
         _ ->
             Err "Operators not applicable on Sets"
-
-apply
