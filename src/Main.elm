@@ -50,9 +50,9 @@ initialModel =
 view : Model -> Html Msg
 view model =
     div [ class "simulationPanel" ]
-        [ h1 [] [ text "Graph Aglorithmn Simulator" ]
+        [ h1 [] [ text "Graph Algorithm Simulator" ]
         , div [ class "simulationPanelItem" ]
-            [ h2 [] [ text "Algorithmn Selection" ]
+            [ h2 [] [ text "Algorithm Selection" ]
             ]
         , div [ class "simulationPanelItem" ]
             [ h2 [] [ text "Debug Control" ]
