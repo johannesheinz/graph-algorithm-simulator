@@ -10,6 +10,7 @@ import Language exposing (..)
 type Msg
     = UpdateGraph Graph
     | GraphUpdated
+    | SelectGraphAlgorithm String
 
 
 type alias Node =
@@ -32,6 +33,7 @@ type alias Graph =
 
 type alias Model =
     { graph : Graph
+        , selectedAlgorithm : String
     }
 
 
@@ -44,6 +46,7 @@ initialModel =
         { nodes = [ { id = 1, marked = True }, { id = 2, marked = False }, { id = 3, marked = False }, { id = 4, marked = False }, { id = 5, marked = False } ]
         , edges = [ { from = 1, to = 2 }, { from = 4, to = 5 }, { from = 4, to = 1 } ]
         }
+     , selectedAlgorithm = "A"
     }
 
 
@@ -53,6 +56,11 @@ view model =
         [ h1 [] [ text "Graph Algorithm Simulator" ]
         , div [ class "simulationPanelItem" ]
             [ h2 [] [ text "Algorithm Selection" ]
+              ,  select [onClick ] [
+                    option [] [text "Algorithm 1"]
+                    , option [] [text "Algorithm 2"]
+                    , option [] [text "Algorithm 3"]
+                ]
             ]
         , div [ class "simulationPanelItem" ]
             [ h2 [] [ text "Debug Control" ]
@@ -74,6 +82,9 @@ update msg model =
             ( model, drawGraph graph )
 
         GraphUpdated ->
+            ( model, Cmd.none )
+
+        SelectGraphAlgorithm name ->
             ( model, Cmd.none )
 
 
