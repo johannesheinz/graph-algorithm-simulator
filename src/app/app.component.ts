@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {vis } from 'vis'
 
 @Component({
   selector: 'app-root',
