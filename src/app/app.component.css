@@ -1,0 +1,24 @@
+.code_block {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.debug_pointer {
+    background: yellow;
+}
+
+.overview {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.overview_item {
+    width: 50%;
+    height: 50%;
+}
+
+.logs ol {
+    list-style-type: none;
+    background: rgb(70, 71, 71);
+    color: white;
+}
