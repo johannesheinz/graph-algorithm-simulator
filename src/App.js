@@ -1,8 +1,35 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+
+  bfs() {
+    var nodes = ['a', 'b', 'c']
+    var neighbors = {};
+    neighbors['a'] = ['b', 'c'];
+    neighbors['b'] = ['c'];
+    neighbors['c'] = ['b']
+    var d = {}
+    d['a'] = 0;
+    var Q = ['a'];
+
+    while (Q.length !== 0) {
+      var currentNode = Q[0];
+      if (neighbors[currentNode].length !== 0) {
+        var neighbor = neighbors[currentNode][0];
+        if (d[neighbor] === undefined) {
+          d[neighbor] = d[currentNode] + 1;
+          Q.push(neighbor);
+        } else {
+          neighbors[currentNode].splice(0,1);
+        }
+      } else {
+        Q.splice(0, 1);
+      }
+    }
+
+    console.log(d);
+  }
 
   render() {
     return (
@@ -12,11 +39,9 @@ class App extends Component {
           <div className="overview-item flex-item--full">
             <h2>Control Panel</h2>
             <div>
-              <select>
-                <option>DFS</option>
-                <option>BFS</option>
-              </select>
-              <input type="button" value="next" />
+              <button onClick={this.bfs}>
+                BFS
+              </button>
             </div>
           </div>
           <div className="overview-item flex-item--half">
