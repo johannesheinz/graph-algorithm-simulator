@@ -15,6 +15,20 @@
   display: flex;
   flex-flow: column nowrap;
   align-items: flex-start;
+  font-size: 14px;
+}
+
+.code-block-line {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.line-number {
+  width: 2em;
+}
+
+.line-content {
+  margin: 0 0 0 0;
 }
 
 .debug-pointer {
@@ -33,7 +47,7 @@
 }
 
 .overview-item {
-  background: lightblue;
+  /* background: lightblue; */
 }
 
 .flex-container {
