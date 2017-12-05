@@ -6,15 +6,15 @@ The goal of this project is to support computer science lectures on graph algori
 
 ## Roadmap
 
-[x] Depth-first Search
-[] Breath-first Search
-[] Mutal Reachability
-[] Strong Correlation Components
-[] Toplogical Sorting
-[] Dijkstra's Algorithm
-[] More-Bellman-Ford
-[] Negative Cycle Detection
-[] A*-Strategy
+- [x] Depth-first Search
+- [ ] Breath-first Search
+- [ ] Mutal Reachability
+- [ ] Strong Correlation Components
+- [ ] Toplogical Sorting
+- [ ] Dijkstra's Algorithm
+- [ ] More-Bellman-Ford
+- [ ] Negative Cycle Detection
+- [ ] A*-Strategy
  
 ## Setup
 
