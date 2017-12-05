@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import { Map, Set, List } from 'immutable';
+import { Map, Set, List, Stack } from 'immutable';
 
 class App extends Component {
 
@@ -37,7 +37,7 @@ class App extends Component {
     };
 
     this.setState((prevState, props) => {
-      const logs = executeAlgorithm("bfs", graph, 'a');
+      const logs = executeAlgorithm("dfs", graph, 'a');
       return ({
         logs: logs,
         currentLogLine: logs[0]
@@ -87,7 +87,7 @@ class App extends Component {
     });
 
     const renderedAlgorithm = renderAlgorithm(codeLines);
-
+    const algorithmState = this.state.currentLogLine != null ? this.state.currentLogLine.state : "foo";
     return (
       <div className="App">
         <h1>Graph Algorithm Simulator</h1>
@@ -98,7 +98,7 @@ class App extends Component {
               <select value={this.state.selectedAlgorithm} onChange={this.handleChange}>
                 <option value="default">Choose</option>
                 <option value="dfs">DFS</option>
-                <option value="bfs">BFS</option>
+                <option value="dfs">dfs</option>
               </select>
               <button onClick={this.handleSubmit}>Run!</button>
               <button onClick={this.before}>Before</button>
@@ -113,9 +113,10 @@ class App extends Component {
             <div id="graph"></div>
           </div>
           <div className="overview-item flex-item--full">
-            <h2>Logs</h2>
-            <ol>
-            </ol>
+            <h2>State</h2>
+            <div>
+              {algorithmState}
+            </div>
           </div>
         </div>
       </div>
@@ -127,7 +128,7 @@ function Data() {
   return {
     algorithms: [
       {
-        name: 'BFS',
+        name: 'dfs',
         code: [
           { number: 1, padding: 0, content: 'Push(Q, s);' },
           { number: 2, padding: 0, content: 'Markiere s;' },
@@ -138,7 +139,7 @@ function Data() {
           { number: 7, padding: 1, content: 'v := top(Q);' },
           { number: 8, padding: 1, content: 'if N[v] != 0 then {' },
           { number: 9, padding: 2, content: 'Wähle v\' in N[v];' },
-          { number: 10, padding: 2, content: 'N[v] := N[v] \ {v\'};' },
+          { number: 10, padding: 2, content: 'N[v] := N[v] \\ {v\'};' },
           { number: 11, padding: 2, content: 'if (v\' ist noch nicht markiert) then {' },
           { number: 12, padding: 3, content: 'Push(Q, v\');' },
           { number: 13, padding: 3, content: 'Markiere v\';' },
@@ -171,47 +172,119 @@ const renderAlgorithm = codeLines => {
 
 function executeAlgorithm(algorithm, graph, startNode) {
   var logs = [];
-  if (algorithm === 'bfs') {
-    logs = bfs(graph.nodes, graph.edges, startNode);
+  if (algorithm === 'dfs') {
+    logs = dfs(graph.nodes, graph.edges, startNode);
   }
   console.log('Computed logs with length ' + logs.length);
   return logs;
 }
 
-function bfs(nodes, edges, startNode) {
+function dfs(nodes, edges, startNode) {
   var logs = [];
   var d = Map();
-  var Q = List();
+  var f = Map();
+  var Q = Stack();
   var N = Map();
-  extendLogs(1, bfsLogLine(Q, d, N), logs);  
-  Q = Q.push(startNode);
-  extendLogs(2, bfsLogLine(Q, d, N), logs);  
-  d = d.set(startNode, 0);
-  N = N.set(startNode, List.of(edges[startNode]));
-  extendLogs(6, bfsLogLine(Q, d, N), logs);
+  var iteration = 0;
+  var v;
+  var v_prime;
+  var mark = List();
+  var s = startNode;
+  var u;
+  extendLogs(1, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+  Q = Q.push(s);
+  extendLogs(2, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+  mark = mark.push(s)
+  extendLogs(3, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+  N = N.set(s, List(edges[s]));
+  extendLogs(4, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+  u = 1;
+  extendLogs(5, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+  d = d.set(s, u);
+  extendLogs(6, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
   while (!Q.isEmpty()) {
-    var currentNode = Q.first();
-    if (!N.get(currentNode).isEmpty()) {
-      var nextNode = N.get(currentNode).first();
-      if (d.get(nextNode) === undefined) {
-        d = d.set(nextNode, d.get(currentNode) + 1);
-        N = N.set(nextNode, List.of(edges[nextNode]));
-        Q = Q.push(nextNode);
-      } else {
-        var next = N.get(currentNode).delete(0);
-        N = N.set(currentNode, next);
+    extendLogs(6, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+    iteration++;
+    extendLogs(7, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+    v = Q.peek();
+    extendLogs(8, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+    if (!N.get(v).isEmpty()) {
+      extendLogs(9, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+      var v_prime = N.get(v).first();
+      extendLogs(10, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);        
+      N = N.set(v, N.get(v).delete(0));
+      extendLogs(11, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);              
+      if (d.get(v_prime) === undefined) {
+        extendLogs(12, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);              
+        Q = Q.push(v_prime);
+        extendLogs(13, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+        mark = mark.push(v_prime);
+        extendLogs(14, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+        N = N.set(v_prime, List(edges[v_prime]));
+        extendLogs(15, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+        u = u + 1;
+        extendLogs(16, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+        d = d.set(v_prime, d.get(v) + 1);
+        extendLogs(17, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
       }
+      extendLogs(17, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);      
     } else {
+      extendLogs(18, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);      
+      extendLogs(19, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
       Q = Q.pop();
+      extendLogs(20, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);      
+      u = u + 1;
+      extendLogs(21, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);      
+      f = f.set(v, u);
+      extendLogs(22, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
     }
-    extendLogs(22, bfsLogLine(Q, d, N), logs);
+    extendLogs(23, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+    v = undefined;
+    v_prime = undefined;
   }
-  extendLogs(23, bfsLogLine(Q, d, N), logs);
+  extendLogs(23, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
   return logs;
 }
 
-function bfsLogLine(Q, d, N) {
-  return `Q = ${JSON.stringify(Q)}, d = ${JSON.stringify(d)}, N = ${JSON.stringify(N)}`;
+function bfs(nodes, edges, startNode) {
+  // var logs = [];
+  // var d = Map();
+  // var f = Map();
+  // var Q = List();
+  // var N = Map();
+  // var iteration = 0;
+  // extendLogs(1, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+  // Q = Q.push(startNode);
+  // extendLogs(2, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);  
+  // N = N.set(startNode, List.of(edges[startNode]));
+  // var u = 1;
+  // d = d.set(startNode, u);
+  // extendLogs(6, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+  // while (!Q.isEmpty()) {
+  //   iteration++;
+  //   var currentNode = Q.first();
+  //   if (!N.get(currentNode).isEmpty()) {
+  //     var nextNode = N.get(currentNode).first();
+  //     if (d.get(nextNode) === undefined) {
+  //       Q = Q.push(nextNode);
+  //       N = N.set(nextNode, List.of(edges[nextNode]));
+  //       u = u + 1;
+  //       d = d.set(nextNode, d.get(currentNode) + 1);
+  //     } else {
+  //       var next = N.get(currentNode).delete(0);
+  //       N = N.set(currentNode, next);
+  //     }
+  //   } else {
+  //     Q = Q.pop();
+  //   }
+  //   extendLogs(22, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+  // }
+  // extendLogs(23, dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark), logs);
+  // return logs;
+}
+
+function dfsLogline(f, u, s, v, v_prime, iteration, Q, d, N, mark) {
+  return `Iteration = ${iteration}, s = ${s}, v = ${v}, v\' = ${v_prime}, Q = ${JSON.stringify(Q)}, d = ${JSON.stringify(d)}, f = ${JSON.stringify(f)}, N = ${JSON.stringify(N)} u = ${u}, mark = ${JSON.stringify(mark)}`;
 }
 
 function extendLogs(line, state, logs) {
