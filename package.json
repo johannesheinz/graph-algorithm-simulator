@@ -1,5 +1,5 @@
 {
-  "name": "graph-algo-simulator",
+  "name": "graph-algorithm-simulator",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
